@@ -247,11 +247,13 @@ int main() {
           	// Sensor Fusion Data, a list of all other cars on the same side of the road.
           	auto sensor_fusion = j[1]["sensor_fusion"];
 
-          	int prev_size = previous_path_x.size();
 
 
 
           	// TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
+
+          	int prev_size = previous_path_x.size();
+
             if(prev_size > 0){
                 car_s = end_path_s;
             }
@@ -330,7 +332,9 @@ int main() {
 
                     check_car_s = sensor_fusion[i][5];
                     check_car_s += ((double)prev_size * 0.02 * check_speed);
-                    dist = abs(check_car_s - car_s);
+                    dist = abs(check_car_s - car_s); //distance for the driving car
+
+                    // count the car in the left lane and sum up their speed
                     if(dist < 200){
                         check_speed_left += check_speed;
                         car_left += 1;
@@ -355,7 +359,9 @@ int main() {
 
                     check_car_s = sensor_fusion[i][5];
                     check_car_s += ((double)prev_size * 0.02 * check_speed);
-                    dist = abs(check_car_s - car_s);
+                    dist = abs(check_car_s - car_s); //distance for the driving car
+
+                    // count the car in the right lane and sum up their speed
                     if(dist <200){
                         check_speed_right += check_speed;
                         car_right += 1;
@@ -375,8 +381,8 @@ int main() {
                 }
             }
 
-            check_speed_left /= car_left;
-            check_speed_right /= car_right;
+            check_speed_left /= car_left; // average speed of the car in the left lane
+            check_speed_right /= car_right; // average speed of the car in the right lane
 
             if(too_close){
                 ref_vel -= 0.224;
