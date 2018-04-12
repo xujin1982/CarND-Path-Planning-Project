@@ -1,6 +1,48 @@
 # CarND-Path-Planning-Project
 Self-Driving Car Engineer Nanodegree Program
-   
+
+[//]: # (Image References)
+[image1]: ./src/Screenshot1.png
+[image2]: ./src/Screenshot2.png
+[image3]: ./src/Screenshot3.png
+[image4]: ./src/Screenshot4.png
+
+## Proejct Rubric
+
+### Compliation
+The code can compile without errors with `cmake` and make with the given `CMakeLists.txt`.
+
+### Valid Trajectories
+
+The car is able to dirve at least 4.32 miles without incident. As shown in the figure below, the car has been driven 10.77 miles without incident. 
+![alt text][image1]
+
+The car drives according the speed limit, which is 50 mph. The max acceleration and jerk are not exceeded. And car does not have any collisions.
+![alt text][image2]
+
+The car is able to chagne lanes and the car starys in its lane, except for the time between changing lanes, as shown in the figures below.
+![alt text][image3]
+![alt text][image4]
+
+## Reflection
+In line 203 to 210 of ` main.cpp`, four variables are defined for changing lanes and setting the speed limit.
+
+* lane: the index of the lane, start in lane 1.
+* ref_vel: the speed limit of the high way.
+* turn_steps: the number of time steps for changing lane. The vaule of 100 indicates a time of `100 * 0.02 = 2 seconds` for an operation of changing lane.
+* target_lane: store the index of the target lane for the operation of changing lane.
+
+To avoid collision with the car in front of the driving car, two bool variables `too_close` and `too_much_close` in line 261 and 262 are defined with different negative accelecation. In line 293 to 314, the logic of brake is defined to avoid the collision to the front car in the same lane.
+
+The code from line 328 to 385 is used to detect the other cars on the lanes beside the lane the car is driving. The average speed of the cars on the other lanes is calculated and the distances of the closest cars in the front and in the back are stored in variables.
+
+The code from line 387 to 395 defines the brake logic and limits the speed of the driving car less than the speed limit.
+
+The code from 411 to 433 defines the logic to change lane. In the lane next to the lane which the car is driving on, If the car in the front is further than 40m, the car in the back is further than 20m, the speed of the driving car is larger than 25 mph, the average speed of the next lane is larger than the driving car or there is no car in the next lane, and the operation of changing lane has finished, the car will change to the next lane in the next 2 seconds.
+
+The code from line 437 to 545 generates the smoothed trajectory of the driving car with splines, which makes the car does not exceed the limitation of acceleration and jerk.
+
+
 ### Simulator.
 You can download the Term3 Simulator which contains the Path Planning Project from the [releases tab (https://github.com/udacity/self-driving-car-sim/releases/tag/T3_v1.2).
 
