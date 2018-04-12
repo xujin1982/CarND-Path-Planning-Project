@@ -9,7 +9,6 @@
 #include "Eigen-3.3/Eigen/QR"
 #include "json.hpp"
 #include "spline.h"
-#include <string>
 
 using namespace std;
 
@@ -201,14 +200,14 @@ int main() {
   	map_waypoints_dx.push_back(d_x);
   	map_waypoints_dy.push_back(d_y);
   }
-  //start in lane 1
+  // start in lane 1
   int lane = 1;
 
   // Have a eference velocity to target
   double ref_vel = 0.0;
 
-  int turn_steps = 0;
-  int target_lane;
+  int turn_steps = 0; // steps for changing lane
+  int target_lane; // target lane
 
 
   h.onMessage([&ref_vel, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy,&lane, &turn_steps, &target_lane](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
@@ -253,18 +252,6 @@ int main() {
 
 
           	// TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
-          	/*
-          	double dist_inc = 0.5;
-            for(int i = 0; i < 50; i++)
-            {
-                double next_s = car_s + (i + 1) * dist_inc;
-                double next_d = 6;
-                vector<double> xy = getXY(next_s, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-                next_x_vals.push_back(xy[0]);
-                next_y_vals.push_back(xy[1]);
-            }
-            */
-
             if(prev_size > 0){
                 car_s = end_path_s;
             }
@@ -278,7 +265,7 @@ int main() {
             double vx_right, vy_right, check_speed_right, dis_car_s_right_front, dis_car_s_right_behind;
             int car_left, car_right;
 
-            // initial the distance with a large value, e.g. 30m
+            // initial the distance with a large value, e.g. 100m
             dis_car_s_front = 50;
             dis_car_s_left_front = 100;
             dis_car_s_left_behind = 100;
@@ -344,7 +331,7 @@ int main() {
                     check_car_s = sensor_fusion[i][5];
                     check_car_s += ((double)prev_size * 0.02 * check_speed);
                     dist = abs(check_car_s - car_s);
-                    if(dist < 100){
+                    if(dist < 200){
                         check_speed_left += check_speed;
                         car_left += 1;
                     }
@@ -369,7 +356,7 @@ int main() {
                     check_car_s = sensor_fusion[i][5];
                     check_car_s += ((double)prev_size * 0.02 * check_speed);
                     dist = abs(check_car_s - car_s);
-                    if(dist < 100){
+                    if(dist <200){
                         check_speed_right += check_speed;
                         car_right += 1;
                     }
@@ -400,7 +387,7 @@ int main() {
             else if(ref_vel < 49.5){
                 ref_vel += 0.224;
             }
-
+/*
             cout<< 'l'<<'a'<<'n'<<'e'<<':'<<' '<<lane << endl;
 
             cout<< 'f'<<'r'<<'o'<<'n'<<'t'<<':'<<' '<<dis_car_s_front << endl;
@@ -414,25 +401,18 @@ int main() {
             cout<< check_speed_right << endl;
 
             cout<< endl;
-
-            if(dis_car_s_left_front >= 30 && dis_car_s_left_behind >= 30 && lane > 0 && car_speed > 25 && turn_steps <= 0 && (check_speed_left > car_speed || car_left == 0)){ // && check_speed_left < car_speed
-                safe_turn_left = true;
-                turn_steps = 150;
-                cout<<'l'<<'e'<<'f'<<'t'<<endl;
-            }
-            if(dis_car_s_right_front >= 30 && dis_car_s_right_behind >= 30 && lane < 2 && car_speed > 25 && turn_steps <= 0 && (check_speed_right > car_speed || car_right == 0)){ //&& check_speed_right < car_speed
-                safe_turn_right = true;
-                turn_steps = 150;
-                cout<<'r'<<'i'<<'g'<<'h'<<'t'<<endl;
-            }
-/*
-            if((dis_car_s_left_front + dis_car_s_left_behind) > (dis_car_s_right_front + dis_car_s_right_behind) && safe_turn_right && safe_turn_left){
-                safe_turn_right = false;
-            }
-            else{
-                safe_turn_left = false;
-            }
 */
+            if(dis_car_s_left_front >= 40 && dis_car_s_left_behind >= 20 && lane > 0 && car_speed > 25 && turn_steps <= 0 && (check_speed_left > car_speed || car_left == 0)){
+                safe_turn_left = true;
+                turn_steps = 100;
+                //cout<<'l'<<'e'<<'f'<<'t'<<endl;
+            }
+            if(dis_car_s_right_front >= 40 && dis_car_s_right_behind >= 20 && lane < 2 && car_speed > 25 && turn_steps <= 0 && (check_speed_right > car_speed || car_right == 0)){
+                safe_turn_right = true;
+                turn_steps = 100;
+                //cout<<'r'<<'i'<<'g'<<'h'<<'t'<<endl;
+            }
+
             if(safe_turn_left){
                 target_lane = lane - 1;
             }
